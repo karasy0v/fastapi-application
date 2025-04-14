@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "fastapi_project"
+version = "1.6.1"
+description = "pet-fastapi_project"
+authors = ['Tema']
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.115.12"
+uvicorn = {extras = ["standard"], version = "^0.34.1"}
+pydantic = {extras = ["email"], version = "^2.11.3"}
+pydantic-settings = "^2.8.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
