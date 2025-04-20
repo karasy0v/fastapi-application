@@ -1,10 +1,12 @@
-from sqlalchemy import Integer
+from sqlalchemy import Integer, MetaData
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column
+from app.core.config import settings
 
 
 class Base(DeclarativeBase):
 
+    metadata = MetaData(naming_convention=settings.db.naming_convention)
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
     def __repr__(self):
