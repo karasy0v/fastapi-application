@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from app.core.models.annotations import (
@@ -43,6 +43,8 @@ class Seat(Base):
     row: Mapped[int_not_nullable_an]
     column: Mapped[int_not_nullable_an]
     busy: Mapped[bool_not_nullable_and_default_false]
+
+    __table_args__ = ( UniqueConstraint("row", "column", name="seat"), )
 
 
 class Movie(Base):
