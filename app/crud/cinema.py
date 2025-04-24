@@ -30,4 +30,14 @@ async def create_new_cinema(cinema_data: CinemaCreate, session: AsyncSession)  -
     return{'detail' : 'successfull!'}
 
 
+async def cinema_delete(id: int, session: AsyncSession):
+    query_check = select(Cinema).where(Cinema.id == id)
+    result = await session.scalar(query_check)
+
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'You are trying to delete a cinema, but it doesn`t exist!')
+    
+    await session.delete(result)
+    await session.commit()
+    return {'detail': 'successfully deleted!'}
 
