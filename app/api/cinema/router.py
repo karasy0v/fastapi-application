@@ -1,11 +1,7 @@
 from fastapi import APIRouter, Depends, Path
 from app.api.prefixs import CINEMA, TAG_CINEMA
 from app.core.models.db_helper import db_helper as db
-
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends,  Path
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.models.models import Cinema
 from app.crud.cinema import get_cinema, create_new_cinema, cinema_delete, cinema_update
 from app.api.schemas.cinema import CinemaCreate, CinemaRead, CinemaUpdate
 
