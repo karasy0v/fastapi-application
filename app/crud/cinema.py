@@ -8,7 +8,7 @@ from app.core.models.models import Cinema
 
 
 async def get_cinema(id,
-    session: AsyncSession) -> Cinema:
+    session: AsyncSession):
     stmnt = select(Cinema).where(Cinema.id == id)
     result = await session.scalar(stmnt)
 
@@ -16,7 +16,7 @@ async def get_cinema(id,
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Cinema not found!')
     return result
 
-async def create_new_cinema(cinema_data: CinemaCreate, session: AsyncSession)  -> Cinema:
+async def create_new_cinema(cinema_data: CinemaCreate, session: AsyncSession):
     query_check = select(Cinema).where(Cinema.name == cinema_data.name)
     result = await session.scalar(query_check)    
     if result:
