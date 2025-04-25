@@ -1,6 +1,7 @@
+from typing import List
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import mapped_column, relationship
 from app.core.models.annotations import (
     int_not_nullable_an,
     str_not_nullable_and_uniq,
@@ -28,12 +29,16 @@ class Cinema(Base):
 
     name: Mapped[str_not_nullable_and_uniq]
 
+    auditoriums: Mapped[List["Auditorium"]] = relationship(back_populates='cinema')
+
 
 class Auditorium(Base):
     __tablename__ = "auditoriums"
 
     cinema_id: Mapped[int_not_nullable_an] = mapped_column(ForeignKey("cinemas.id"))
     name: Mapped[str_not_nullable_an]
+
+    cinema: Mapped["Cinema"] = relationship(back_populates='auditoriums')
 
 
 class Seat(Base):
