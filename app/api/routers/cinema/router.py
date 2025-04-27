@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, Path
-from app.api.prefixs import CINEMA, TAG_CINEMA
+from app.api.prefixs import PREFIX_CINEMA, TAG_CINEMA
 from app.core.models.db_helper import db_helper as db
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud.cinema import get_cinema, create_new_cinema, cinema_delete, cinema_update
 from app.api.schemas.cinema import CinemaCreate, CinemaRead, CinemaUpdate
 
-router = APIRouter(prefix=CINEMA, tags=TAG_CINEMA)
+router = APIRouter(prefix=PREFIX_CINEMA, tags=TAG_CINEMA)
 
 
 @router.get('/{id}',response_model=CinemaRead)
