@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from app.api.cinema.router import router as cinema_router
-from app.api.auditorium.router import router as auditorium_router
+from app.api.routers.cinema.router import router as cinema_router
+from app.api.routers.auditorium.router import router as auditorium_router
 
 router = APIRouter()
 
