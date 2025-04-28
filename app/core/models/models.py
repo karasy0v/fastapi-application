@@ -58,6 +58,7 @@ class Movie(Base):
     name: Mapped[str_not_nullable_and_uniq]
     duration: Mapped[int_not_nullable_an]
 
+    sessions: Mapped[List["Session"]] = relationship(back_populates='movie')
 
 class Session(Base):
     __tablename__ = "sessions"
@@ -65,6 +66,9 @@ class Session(Base):
     auditorium_id: Mapped[int_not_nullable_an] = mapped_column(ForeignKey("auditoriums.id"))
     movie_id: Mapped[int_not_nullable_an] = mapped_column(ForeignKey("movies.id"))
     start_time: Mapped[datetime_now_not_nullable_an]
+    end_time: Mapped[datetime_now_not_nullable_an]
+
+    movie: Mapped["Movie"] = relationship(back_populates='sessions')
 
 
 class Ticket(Base):
