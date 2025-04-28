@@ -9,6 +9,6 @@ async def get_auditorium_by_id(id: int, session: AsyncSession):
     result = await session.scalar(query_check)
 
     if not result:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Auditorium is not found!')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Auditorium not found!')
     return result
 
