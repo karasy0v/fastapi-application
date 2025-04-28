@@ -10,6 +10,6 @@ async def get_movie_by_id(id: int, session: AsyncSession):
     if not result:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
-            detail= 'Movie is not found!'
+            detail= 'Movie  not found!'
         )
     return result
