@@ -38,7 +38,8 @@ class Auditorium(Base):
     cinema_id: Mapped[int_not_nullable_an] = mapped_column(ForeignKey("cinemas.id"))
     name: Mapped[str_not_nullable_an]
 
-    cinema: Mapped["Cinema"] = relationship(back_populates='auditoriums')
+    cinema: Mapped["Cinema"] = relationship(back_populates="auditoriums")
+    seats: Mapped[list["Seat"]] = relationship(back_populates="auditorium")
 
 
 class Seat(Base):
@@ -49,7 +50,9 @@ class Seat(Base):
     column: Mapped[int_not_nullable_an]
     busy: Mapped[bool_not_nullable_and_default_false]
 
-    __table_args__ = ( UniqueConstraint("row", "column", name="seat"), )
+    auditorium: Mapped['Auditorium'] = relationship(back_populates='seats')
+
+    
 
 
 class Movie(Base):
@@ -58,7 +61,7 @@ class Movie(Base):
     name: Mapped[str_not_nullable_and_uniq]
     duration: Mapped[int_not_nullable_an]
 
-    sessions: Mapped[List["Session"]] = relationship(back_populates='movie')
+    sessions: Mapped[list["Session"]] = relationship(back_populates='movie')
 
 class Session(Base):
     __tablename__ = "sessions"
