@@ -6,6 +6,8 @@ class RunConfig(BaseModel):
     host: str = "127.0.0.1"
     port: int = 8000
 
+class DatetimeConfig(BaseModel):
+    value: str = "%Y-%m-%d %H:%M:%S"
 
 class ApiPrefix(BaseModel):
     """
@@ -37,6 +39,7 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
+    dt: DatetimeConfig = DatetimeConfig()
 
 
 settings = Settings()
