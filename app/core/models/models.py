@@ -7,6 +7,7 @@ from app.core.models.annotations import (
     str_not_nullable_an,
     phone_number_an,
     datetime_now_not_nullable_an,
+    datetime_not_nullable
 )
 from sqlalchemy import (
     ForeignKey
@@ -75,7 +76,7 @@ class Session(Base):
     auditorium_id: Mapped[int_not_nullable_an] = mapped_column(ForeignKey("auditoriums.id"))
     movie_id: Mapped[int_not_nullable_an] = mapped_column(ForeignKey("movies.id"))
     start_time: Mapped[datetime_now_not_nullable_an]
-    end_time: Mapped[datetime_now_not_nullable_an]
+    end_time: Mapped[datetime_not_nullable] 
 
     movie: Mapped["Movie"] = relationship(back_populates='sessions')
     tickets: Mapped[list["Ticket"]] = relationship(back_populates='session')
