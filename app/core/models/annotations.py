@@ -1,7 +1,8 @@
 from typing import Annotated
 from datetime import datetime
-from sqlalchemy import String, TIMESTAMP, func
+from sqlalchemy import  String, TIMESTAMP, func
 from sqlalchemy.orm import mapped_column
+
 
 str_not_nullable_and_uniq = Annotated[str, mapped_column(nullable=False, unique=True)]
 str_not_nullable_an = Annotated[str, mapped_column(nullable=False)]
@@ -19,4 +20,8 @@ phone_number_an = Annotated[str, mapped_column(String(10), nullable=False)]
 datetime_now_not_nullable_an = Annotated[
     datetime,
     mapped_column(TIMESTAMP, nullable=False, server_default=func.now()),
+]
+datetime_not_nullable = Annotated[
+    datetime,
+    mapped_column(TIMESTAMP, nullable=False),
 ]
