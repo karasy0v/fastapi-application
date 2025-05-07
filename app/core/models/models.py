@@ -1,6 +1,7 @@
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column, relationship
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.models.annotations import (
     int_not_nullable_an,
     str_not_nullable_and_uniq,
@@ -12,7 +13,9 @@ from app.core.models.annotations import (
 from sqlalchemy import (
     ForeignKey
 )
-from fastapi_users.db import SQLAlchemyBaseUserTable
+from fastapi_users.db import (
+    SQLAlchemyBaseUserTable,
+    SQLAlchemyUserDatabase )
 from app.core.models.base import Base
 from .mixins.id_int_pk import IdIntPkMixin
 
@@ -24,6 +27,10 @@ class User(Base, IdIntPkMixin, SQLAlchemyBaseUserTable[int]):
     name: Mapped[str_not_nullable_an]
     surname: Mapped[str_not_nullable_an]
     phone_number: Mapped[phone_number_an]
+
+    @classmethod
+    def get_db(cls, session: AsyncSession):
+        return SQLAlchemyUserDatabase(session, User)
 
     tickets: Mapped[list["Ticket"]] = relationship(back_populates="user")
 
