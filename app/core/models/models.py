@@ -12,11 +12,13 @@ from app.core.models.annotations import (
 from sqlalchemy import (
     ForeignKey
 )
+from fastapi_users.db import SQLAlchemyBaseUserTable
 from app.core.models.base import Base
+from .mixins.id_int_pk import IdIntPkMixin
 
 
 
-class User(Base):
+class User(Base, IdIntPkMixin, SQLAlchemyBaseUserTable[int]):
     __tablename__ = "users"
 
     name: Mapped[str_not_nullable_an]
@@ -26,7 +28,7 @@ class User(Base):
     tickets: Mapped[list["Ticket"]] = relationship(back_populates="user")
 
 
-class Cinema(Base):
+class Cinema(IdIntPkMixin, Base):
     __tablename__ = "cinemas"
 
     name: Mapped[str_not_nullable_and_uniq]
@@ -34,7 +36,7 @@ class Cinema(Base):
     auditoriums: Mapped[list["Auditorium"]] = relationship(back_populates='cinema')
 
 
-class Auditorium(Base):
+class Auditorium(IdIntPkMixin,Base):
     __tablename__ = "auditoriums"
 
     cinema_id: Mapped[int_not_nullable_an] = mapped_column(ForeignKey("cinemas.id"))
@@ -44,7 +46,7 @@ class Auditorium(Base):
     seats: Mapped[list["Seat"]] = relationship(back_populates="auditorium")
 
 
-class Seat(Base):
+class Seat(IdIntPkMixin,Base):
     __tablename__ = "seats"
 
     auditorium_id: Mapped[int_not_nullable_an] = mapped_column(ForeignKey("auditoriums.id"))
@@ -62,7 +64,7 @@ class Seat(Base):
 
     
 
-class Movie(Base):
+class Movie(IdIntPkMixin, Base):
     __tablename__ = "movies"
 
     name: Mapped[str_not_nullable_and_uniq]
@@ -70,7 +72,7 @@ class Movie(Base):
 
     sessions: Mapped[list["Session"]] = relationship(back_populates='movie')
 
-class Session(Base):
+class Session(IdIntPkMixin, Base):
     __tablename__ = "sessions"
 
     auditorium_id: Mapped[int_not_nullable_an] = mapped_column(ForeignKey("auditoriums.id"))
@@ -82,7 +84,7 @@ class Session(Base):
     tickets: Mapped[list["Ticket"]] = relationship(back_populates='session')
 
 
-class Ticket(Base):
+class Ticket(IdIntPkMixin,Base):
     __tablename__ = "tickets"
 
     price: Mapped[int_not_nullable_an]
