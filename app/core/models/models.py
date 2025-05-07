@@ -13,7 +13,7 @@ from app.core.models.annotations import (
 from sqlalchemy import (
     ForeignKey
 )
-from fastapi_users.db import (
+from fastapi_users_db_sqlalchemy import (
     SQLAlchemyBaseUserTable,
     SQLAlchemyUserDatabase )
 from app.core.models.base import Base
@@ -103,3 +103,6 @@ class Ticket(IdIntPkMixin,Base):
 
     user: Mapped["User"] = relationship(back_populates="tickets")
     session: Mapped["Session"] = relationship(back_populates="tickets")
+
+    
+
