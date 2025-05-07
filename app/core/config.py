@@ -9,6 +9,10 @@ class RunConfig(BaseModel):
 class DatetimeConfig(BaseModel):
     value: str = "%Y-%m-%d %H:%M:%S"
 
+class AccessToken(BaseModel):
+    lifetime_seconds: int = 3600
+
+
 class ApiPrefix(BaseModel):
     """
     Prefix to main api router, path: app.api.main_router
@@ -40,6 +44,6 @@ class Settings(BaseSettings):
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
     dt: DatetimeConfig = DatetimeConfig()
-
+    access_token: AccessToken = AccessToken()
 
 settings = Settings()
