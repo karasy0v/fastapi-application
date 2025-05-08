@@ -6,15 +6,19 @@ class RunConfig(BaseModel):
     host: str = "127.0.0.1"
     port: int = 8000
 
+
 class DatetimeConfig(BaseModel):
     value: str = "%Y-%m-%d %H:%M:%S"
 
+
 class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
-    
+
+
 class Authentication(BaseModel):
     reset_password_token_secret: str
     verification_token_secret: str
+
 
 class ApiPrefix(BaseModel):
     """
@@ -41,13 +45,18 @@ class DatabaseConfig(BaseModel):
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", env_nested_delimiter="__")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_nested_delimiter="__",
+    )
 
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
     dt: DatetimeConfig = DatetimeConfig()
     access_token: AccessToken = AccessToken()
-    authentication: Authentication = Authentication()
+    authentication: Authentication
+
 
 settings = Settings()
