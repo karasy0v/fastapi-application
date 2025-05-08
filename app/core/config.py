@@ -15,6 +15,11 @@ class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
 
 
+class AuthenticationPrefix(BaseModel):
+    auth: str = "/auth"
+    login: str = "/login"
+
+
 class Authentication(BaseModel):
     reset_password_token_secret: str
     verification_token_secret: str
@@ -26,6 +31,13 @@ class ApiPrefix(BaseModel):
     """
 
     prefix: str = "/api"
+    auth: AuthenticationPrefix = AuthenticationPrefix()
+
+    @property
+    def bearer_token_transport(self) -> str:
+        parts = (self.auth.auth, self.auth.login)
+        path = "".join(parts)
+        return path
 
 
 class DatabaseConfig(BaseModel):
