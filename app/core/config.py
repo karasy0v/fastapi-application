@@ -11,7 +11,10 @@ class DatetimeConfig(BaseModel):
 
 class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
-
+    
+class Authentication(BaseModel):
+    reset_password_token_secret: str
+    verification_token_secret: str
 
 class ApiPrefix(BaseModel):
     """
@@ -45,5 +48,6 @@ class Settings(BaseSettings):
     db: DatabaseConfig
     dt: DatetimeConfig = DatetimeConfig()
     access_token: AccessToken = AccessToken()
+    authentication: Authentication = Authentication()
 
 settings = Settings()
