@@ -35,9 +35,9 @@ class ApiPrefix(BaseModel):
 
     @property
     def bearer_token_transport(self) -> str:
-        parts = (self.auth.auth, self.auth.login)
+        parts = (self.prefix, self.auth.auth, self.auth.login)
         path = "".join(parts)
-        return path
+        return path[1:]
 
 
 class DatabaseConfig(BaseModel):
