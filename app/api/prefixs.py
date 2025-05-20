@@ -6,7 +6,7 @@ TAG_SEAT = ["Seat"]
 TAG_TICKET = ["Ticket"]
 TAG_AUTH = ["Auth"]
 TAG_USER = ["Users"]
-
+TAG_RESERVATION = ["Reservation"]
 
 PREFIX_AUDITORIUM = "/auditorium"
 PREFIX_CINEMA = "/cinema"
@@ -16,3 +16,4 @@ PREFIX_SEAT = "/seat"
 PREFIX_TICKET = "/ticket"
 PREFIX_AUTH = "/auth"
 PREFIX_USER = "/users"
+PREFIX_RESERVATION = "/reservation"

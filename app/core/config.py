@@ -25,6 +25,16 @@ class Authentication(BaseModel):
     verification_token_secret: str
 
 
+class Reservation(BaseModel):
+    hours_before_start: int = 6
+    hours_expires_at: int = 1
+
+
+class ReservationPrefix(BaseModel):
+    reservation_prefix: str = "/create"
+    confirm_reservation_prefix: str = "/confirm/{id}"
+
+
 class ApiPrefix(BaseModel):
     """
     Prefix to main api router, path: app.api.main_router
@@ -69,6 +79,8 @@ class Settings(BaseSettings):
     dt: DatetimeConfig = DatetimeConfig()
     access_token: AccessToken = AccessToken()
     authentication: Authentication
+    reservation_time: Reservation = Reservation()
+    reservation_prefix: ReservationPrefix = ReservationPrefix()
 
 
 settings = Settings()
