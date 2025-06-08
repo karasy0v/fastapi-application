@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from app.api.dependencies.exception_handlers import register_exception_handlers
+from app.core.models.redis_helper import redis_helper
 from .api.main_router import router as api_router
 from app.core.models.db_helper import db_helper
 from app.core.config import settings
@@ -11,8 +12,10 @@ from app.core.config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await redis_helper.init()
     yield
     await db_helper.dispose()
+    await redis_helper.close()
 
 
 app = FastAPI(

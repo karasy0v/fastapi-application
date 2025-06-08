@@ -50,6 +50,15 @@ class ApiPrefix(BaseModel):
         return path[1:]
 
 
+class RedisConfig(BaseModel):
+    host: str = "localhost"
+    port: int = 6379
+    db: int = 0
+    password: str | None = None
+    encoding: str = "utf-8"
+    decode_response: bool = True
+
+
 class DatabaseConfig(BaseModel):
     hostname: str
     port: str
@@ -81,6 +90,7 @@ class Settings(BaseSettings):
     authentication: Authentication
     reservation_time: Reservation = Reservation()
     reservation_prefix: ReservationPrefix = ReservationPrefix()
+    redis: RedisConfig = RedisConfig()
 
 
 settings = Settings()
