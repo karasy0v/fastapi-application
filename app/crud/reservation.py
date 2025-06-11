@@ -1,25 +1,21 @@
-from fastapi import Depends
-from datetime import (
-    timedelta,
-    timezone,
-    datetime,
-)
+from fastapi import Depends, HTTPException
 from app.api.exceptions import (
     SeatNotFoundError,
     TicketAlreadyBooked,
     TimeForBookingIsOver,
+    TimeOutReservation,
 )
 from app.core.models.models import (
-    Reservation,
     User,
 )
 from app.api.dependencies.get_current_user import current_user
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.crud.secondary_funcs.create_reservation_in_db import create_reservation_in_db
 from app.crud.secondary_funcs.validate_seats_exists import validate_seats
 from app.crud.secondary_funcs.validate_reservation_already_exist import validate_reservation
 from app.crud.secondary_funcs.validate_time_booking import validate_time_booking
 from app.api.schemas.reservation import ReservationCreate
-from app.core.config import settings
+from app.core.models.redis_helper import redis_helper
 
 
 async def create_reservation(
@@ -27,32 +23,63 @@ async def create_reservation(
     db: AsyncSession,
     user: User = Depends(current_user),
 ):
+    redis = await redis_helper.get_redis()
 
-    seat_id = await validate_seats(reservation_data.row, reservation_data.column, reservation_data.session_id, db)
+    lock_key = f"seat_lock:{reservation_data.session_id}:{reservation_data.row}:{reservation_data.column}"
 
-    if not seat_id:
-        raise SeatNotFoundError(reservation_data.row, reservation_data.column)
+    if await redis.set(lock_key, 1, ex=300, nx=True):
+        try:
+            if await redis.sismember(
+                f"reserved_seat:{reservation_data.session_id}", f"{reservation_data.row}:{reservation_data.column}"
+            ):
+                raise
+            seat_id = await validate_seats(
+                reservation_data.row, reservation_data.column, reservation_data.session_id, db
+            )
+            if not seat_id:
+                raise SeatNotFoundError(reservation_data.row, reservation_data.column)
 
-    if await validate_reservation(seat_id, reservation_data.session_id, db):
-        raise TicketAlreadyBooked(reservation_data.row, reservation_data.column)
+            if await validate_reservation(seat_id, reservation_data.session_id, db):
+                raise TicketAlreadyBooked(reservation_data.row, reservation_data.column)
 
-    session_time = await validate_time_booking(reservation_data.session_id, db)
-    if not session_time:
-        raise TimeForBookingIsOver()
+            session_time = await validate_time_booking(reservation_data.session_id, db)
+            if not session_time:
+                raise TimeForBookingIsOver()
 
-    new_reservation = Reservation(
-        seat_id=seat_id,
-        session_id=reservation_data.session_id,
-        user_id=user.id,
-        reserved_at=datetime.now(timezone.utc),
-        expires_at=(session_time - timedelta(hours=settings.reservation_time.hours_expires_at)).replace(
-            tzinfo=timezone.utc
-        ),
-        is_confirmed=False,
-    )
+            reservation = await create_reservation_in_db(
+                seat_id, reservation_data.session_id, user.id, session_time, db
+            )
+            await redis.sadd(
+                f"reserved_seat:{reservation_data.session_id}", f"{reservation_data.row}:{reservation_data.column}"
+            )
 
-    db.add(new_reservation)
-    await db.commit()
-    await db.refresh(new_reservation)
+            return reservation
+        finally:
+            await redis.delete(lock_key)
+    else:
+        raise HTTPException(status_code=409, detail="Seat is being reserved by another user.")
 
-    return new_reservation
+
+# async def creat_reservation(
+#     reservation_data: ReservationCreate,
+#     db: AsyncSession,
+#     user: User = Depends(current_user),
+# ):
+#     redis = await redis_helper.get_redis()
+#     session_id = reservation_data.session_id
+#     seat_id = await validate_seats(reservation_data.row, reservation_data.column, reservation_data.session_id, db)
+#     lock_key = f"seat_lock:{session_id}:{seat_id}"
+
+# if await redis.set(lock_key, "1", 300, nx=True):
+#     try:
+#         if await redis.sismember(f"reserved_seat:{session_id}" , seat_id):
+#             raise TicketAlreadyBooked(reservation_data.row, reservation_data.column)
+#         new_reservation = "1" # create func to add new reservation on db -> reservation = await create_reservation_in_db(reservation_data)
+#         redis.sadd(f"reserved_seat:{session_id}", seat_id)
+#         return new_reservation
+#     finally:
+#         await redis.delete(lock_key)
+
+
+# else:
+#     raise HTTPException(status_code=409, detail="Reservation is being processed")

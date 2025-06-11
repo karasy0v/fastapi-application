@@ -66,3 +66,12 @@ class TimeToReservationalExpired(ReservationErrors):
 
     def __str__(self):
         return self.message
+
+
+class TimeOutReservation(ReservationErrors):
+    def __init__(self):
+        message = f"В данный момент кто-то уже бронирует билет на это место!"
+        super().__init__(message)
+
+    def __str__(self):
+        return self.message
