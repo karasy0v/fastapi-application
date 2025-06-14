@@ -58,28 +58,3 @@ async def create_reservation(
             await redis.delete(lock_key)
     else:
         raise HTTPException(status_code=409, detail="Seat is being reserved by another user.")
-
-
-# async def creat_reservation(
-#     reservation_data: ReservationCreate,
-#     db: AsyncSession,
-#     user: User = Depends(current_user),
-# ):
-#     redis = await redis_helper.get_redis()
-#     session_id = reservation_data.session_id
-#     seat_id = await validate_seats(reservation_data.row, reservation_data.column, reservation_data.session_id, db)
-#     lock_key = f"seat_lock:{session_id}:{seat_id}"
-
-# if await redis.set(lock_key, "1", 300, nx=True):
-#     try:
-#         if await redis.sismember(f"reserved_seat:{session_id}" , seat_id):
-#             raise TicketAlreadyBooked(reservation_data.row, reservation_data.column)
-#         new_reservation = "1" # create func to add new reservation on db -> reservation = await create_reservation_in_db(reservation_data)
-#         redis.sadd(f"reserved_seat:{session_id}", seat_id)
-#         return new_reservation
-#     finally:
-#         await redis.delete(lock_key)
-
-
-# else:
-#     raise HTTPException(status_code=409, detail="Reservation is being processed")
