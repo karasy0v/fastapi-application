@@ -3,7 +3,6 @@ from app.api.exceptions import (
     SeatNotFoundError,
     TicketAlreadyBooked,
     TimeForBookingIsOver,
-    TimeOutReservation,
 )
 from app.core.models.models import (
     User,
@@ -30,9 +29,11 @@ async def create_reservation(
     if await redis.set(lock_key, 1, ex=300, nx=True):
         try:
             if await redis.sismember(
-                f"reserved_seat:{reservation_data.session_id}", f"{reservation_data.row}:{reservation_data.column}"
+                f"reserved_seat:{reservation_data.session_id}",
+                f"{reservation_data.row}:{reservation_data.column}",
             ):
-                raise
+                raise HTTPException(status_code=409, detail="Seat already reserved (cached)")
+
             seat_id = await validate_seats(
                 reservation_data.row, reservation_data.column, reservation_data.session_id, db
             )
@@ -50,7 +51,8 @@ async def create_reservation(
                 seat_id, reservation_data.session_id, user.id, session_time, db
             )
             await redis.sadd(
-                f"reserved_seat:{reservation_data.session_id}", f"{reservation_data.row}:{reservation_data.column}"
+                f"reserved_seat:{reservation_data.session_id}",
+                f"{reservation_data.row}:{reservation_data.column}",
             )
 
             return reservation

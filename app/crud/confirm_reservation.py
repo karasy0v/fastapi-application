@@ -11,6 +11,7 @@ from app.api.exceptions import (
     TimeToReservationalExpired,
 )
 
+from app.core.models.redis_helper import redis_helper
 from app.core.models.models import (
     Reservation,
     User,
@@ -24,9 +25,8 @@ async def confirm_reservations(
     db: AsyncSession,
     user: User = Depends(current_user),
 ):
+    redis = await redis_helper.get_redis()
     reservation = await db.get(Reservation, reservation_id)
-
-    print(reservation)
 
     if not reservation:
         raise ReservationNotFoundError()
@@ -38,20 +38,22 @@ async def confirm_reservations(
         raise TimeToReservationalExpired()
 
     if reservation.is_confirmed:
-        TimeToReservationalExpired()
+        raise TimeToReservationalExpired()
 
-    seat_price = await db.get(Seat, reservation.seat_id)
+    seat = await db.get(Seat, reservation.seat_id)
 
     new_ticket = Ticket(
         session_id=reservation.session_id,
         seat_id=reservation.seat_id,
         user_id=reservation.user_id,
-        price=seat_price.price,
+        price=seat.price,
     )
 
     db.add(new_ticket)
+
     await db.delete(reservation)
     await db.commit()
+    await redis.srem(f"reserved_seat:{new_ticket.session_id}", f"{seat.row}:{seat.column}")
     await db.refresh(new_ticket)
 
     return new_ticket
