@@ -1,0 +1,58 @@
+
+services:
+  app:
+    build: 
+      context: ./
+      dockerfile: ./Dockerfile
+    environment: 
+      DB__HOSTNAME: "pg"
+      DB__PORT: "5432"
+      DB__PASSWORD: "B7cd63ag2"
+      DB__NAME: "cinema"
+      DB__USERNAME: "postgres"
+    ports:
+      - "5050:8000"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    depends_on:
+      pg:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./app
+          target: /app/app
+        - action: rebuild
+          path: ./poetry.lock
+      
+  pg:
+    image: postgres:16.4
+    environment: 
+      POSTGRES_PASSWORD: B7cd63ag2
+      POSTGRES_DB: cinema
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready"]
+        interval: 10s
+        timeout: 5s
+        retries: 3 
+
+    
+    
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5051:80"
+    depends_on:
+      pg:
+        condition: service_healthy
+
+volumes:
+  pgdata:
